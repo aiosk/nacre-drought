@@ -7,5 +7,7 @@
 	$ ./docker-compose-login.sh
 	$ python main.py
 
-if scraper get enough data, press `CTRL+C`
-get your data on `./scraper/data.json`
+---
+If scraper get enough data, press `CTRL+C`
+
+Get your data on `./scraper/data.json`
