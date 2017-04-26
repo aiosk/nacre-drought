@@ -1,0 +1,8 @@
+version: '3'
+services:
+    scraper:
+        build: ./scraper
+        volumes:
+          - ./scraper:/project
+        restart: unless-stopped
+        command: python /project/main.py
