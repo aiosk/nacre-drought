@@ -3,6 +3,7 @@ import json
 from time import sleep
 import os
 import sys
+import copy
 
 
 def getData(url=''):
@@ -26,6 +27,7 @@ urlFileName = 'urls.json'
 urlData = []
 with open(urlFileName) as f:
     urlData = json.load(f)
+    urlDataWrite = copy.deepcopy(urlData)
     f.close()
 
 try:
@@ -37,7 +39,6 @@ try:
             if not any(dataPemilih['id'] == pemilih['id'] for dataPemilih in data):
                 pemilihLocation = getLocation(urlVal.replace('%20', ' '))
                 pemilih.update(pemilihLocation)
-                print(pemilih)
 
                 data.append(pemilih)
                 print('append {nik} {nama} to data'.format(
@@ -47,7 +48,7 @@ try:
                     nik=pemilih['nik'], nama=pemilih['nama']))
 
         print('removing {url} from list'.format(url=urlVal))
-        urlData.remove(urlVal)
+        urlDataWrite.remove(urlVal)
 except KeyboardInterrupt:
     sys.exit()
 finally:
@@ -58,5 +59,5 @@ finally:
 
     print('write to {fileName}'.format(fileName=urlFileName))
     with open(urlFileName, 'w') as f:
-        json.dump(urlData, f, indent=2)
+        json.dump(urlDataWrite, f, indent=2)
         f.close()
