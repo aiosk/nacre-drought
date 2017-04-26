@@ -5,4 +5,5 @@ services:
         volumes:
           - ./scraper:/project
         restart: unless-stopped
-        command: python /project/main.py
+        working_dir: /project
+        command: tail -f /dev/null
