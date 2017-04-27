@@ -31,13 +31,13 @@ c.execute('''CREATE TABLE IF NOT EXISTS tempatLahir (
 
 # load data to memory
 data = []
-dataCheckExist = tuple(r[0] for r in c.execute('SELECT id FROM pemilih').fetchall())
+dataCheckExist = set(r[0] for r in c.execute('SELECT id FROM pemilih').fetchall())
 rowKelurahan = c.execute('SELECT id,nama FROM kelurahan').fetchall()
 rowKecamatan = c.execute('SELECT id,nama FROM kecamatan').fetchall()
 rowKabkota = c.execute('SELECT id,nama FROM kabkota').fetchall()
 rowJenisKelamin = c.execute('SELECT id,nama FROM kelamin').fetchall()
 rowTempatLahir = c.execute('SELECT id,nama FROM tempatLahir').fetchall()
-urlData = tuple(r[0] for r in c.execute('SELECT url FROM source').fetchall())
+urlData = set(r[0] for r in c.execute('SELECT url FROM source').fetchall())
 
 
 def getData(url=''):
@@ -90,12 +90,15 @@ try:
                 print('Append {nik} {nama} to data pemilih'.format(nik=pemilih['nik'], nama=pemilih['nama']))
                 pemilih = preparePemilih(pemilih)
 
+                # print(pemilih)
+                data.append(pemilih)
+
             # pemilih.update(tpsLocation)
             # print('Append {nik} {nama} to data pemilih'.format( nik=pemilih['nik'], nama=pemilih['nama']))
             # pemilih = preparePemilih(pemilih)
 
             # print(pemilih)
-            data.append(pemilih)
+            # data.append(pemilih)
 
         print('removing {url} from list'.format(url=urlVal))
         c.execute('DELETE FROM source where url=?', (urlVal,))
