@@ -22,13 +22,14 @@ data = []
 with open(dataFileName) as f:
     data = json.load(f)
     f.close()
+    dataCheckExist = set((d['id'] for d in data))
 
 urlFileName = 'urls.json'
 urlData = []
 with open(urlFileName) as f:
     urlData = json.load(f)
-    urlDataWrite = copy.deepcopy(urlData)
     f.close()
+    urlDataWrite = copy.deepcopy(urlData)
 
 try:
     for urlVal in urlData:
@@ -36,15 +37,15 @@ try:
         tps = getData(urlVal)
 
         for pemilih in tps:
-            if not any(dataPemilih['id'] == pemilih['id'] for dataPemilih in data):
+            if pemilih['id'] in dataCheckExist:
+                print('{nik} {nama} already exists'.format(
+                    nik=pemilih['nik'], nama=pemilih['nama']))
+            else:
                 pemilihLocation = getLocation(urlVal.replace('%20', ' '))
                 pemilih.update(pemilihLocation)
 
                 data.append(pemilih)
                 print('append {nik} {nama} to data'.format(
-                    nik=pemilih['nik'], nama=pemilih['nama']))
-            else:
-                print('{nik} {nama} already exists'.format(
                     nik=pemilih['nik'], nama=pemilih['nama']))
 
         print('removing {url} from list'.format(url=urlVal))
