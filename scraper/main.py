@@ -60,7 +60,7 @@ def getTpsId(url):
 rowJenisKelamin = c.execute('SELECT id,nama FROM jenisKelamin').fetchall()
 def preparePemilih(pemilih, tpsId):
     jenisKelaminId = tuple(r[0] for r in rowJenisKelamin if pemilih[ 'jenisKelamin'].lower() == r[1])[0]
-    tempatLahirId = getTempatLahirId(pemilih['tempatLahir'])
+    tempatLahirId = 1 if not pemilih['tempatLahir'] else getTempatLahirId(pemilih['tempatLahir'])
 
     return (pemilih['id'], pemilih['nama'].upper(), pemilih['nik'], int(pemilih['putaran']), jenisKelaminId, tempatLahirId, tpsId,)
 
