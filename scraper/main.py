@@ -47,12 +47,13 @@ def getTempatLahirId(tempatLahirPemilih):
     return tempatLahirId
 
 
-rowKelurahan = c.execute('SELECT id,nama FROM kelurahan').fetchall()
-rowTps = c.execute('SELECT id,nama,kelurahanId FROM tps').fetchall()
+# rowKelurahan = c.execute('SELECT id,nama FROM kelurahan').fetchall()
+rowTps = c.execute('''SELECT t.id,t.nama,t.kelurahanId,k.nama kelurahanNama
+    FROM tps t
+    join kelurahan k on k.id=t.kelurahanId''').fetchall()
 def getTpsId(url):
     location = url.split('/')
-    kelurahanId = tuple(r[0] for r in rowKelurahan if location[-3].upper() == r[1])[0]
-    tpsId = tuple(r[0] for r in rowTps if int(location[-2]) == r[1] and kelurahanId == r[2])[0]
+    tpsId = tuple(r[0] for r in rowTps if int(location[-2]) == r[1] and location[-3].upper() == r[3])[0]    
 
     return tpsId
 
@@ -76,10 +77,10 @@ try:
 
         for pemilih in tps:
             try:
-                print('Insert {nik} {nama} to data pemilih'.format( nik=pemilih['nik'], nama=pemilih['nama']))
                 c.execute('''INSERT INTO
                     pemilih (id, nama, nik, putaran, jenisKelaminId, tempatLahirId, tpsId)
                     VALUES  ( ?,    ?,   ?,       ?,              ?,             ?,     ?)''', preparePemilih(pemilih, tpsId))
+                print('Insert {nik} {nama} to data pemilih'.format( nik=pemilih['nik'], nama=pemilih['nama']))
             except sqlite3.IntegrityError as e:
                 if 'unique constraint' in e.args[0].lower():
                     print('{nik} {nama} already exists'.format( nik=pemilih['nik'], nama=pemilih['nama']))
