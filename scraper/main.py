@@ -12,7 +12,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS pemilih (
     nik VARCHAR(20) NOT NULL,
     putaran INTEGER NOT NULL,
     jenisKelaminId INTEGER NOT NULL,
-    tempatLahirId INTEGER NOT NULL,
+    tempatLahirId INTEGER,
     tpsId INTEGER NOT NULL,
     UNIQUE (id, nama, putaran, jenisKelaminId, tempatLahirId, tpsId),
     FOREIGN KEY (jenisKelaminId) REFERENCES jenisKelamin(id),
@@ -60,13 +60,14 @@ def getTpsId(url):
 rowJenisKelamin = c.execute('SELECT id,nama FROM jenisKelamin').fetchall()
 def preparePemilih(pemilih, tpsId):
     jenisKelaminId = tuple(r[0] for r in rowJenisKelamin if pemilih[ 'jenisKelamin'].lower() == r[1])[0]
-    tempatLahirId = 1 if not pemilih['tempatLahir'] else getTempatLahirId(pemilih['tempatLahir'])
+    try:
+        tempatLahirId = getTempatLahirId(pemilih['tempatLahir'])
+    except KeyError:
+        tempatLahirId = None
 
     return (pemilih['id'], pemilih['nama'].upper(), pemilih['nik'], int(pemilih['putaran']), jenisKelaminId, tempatLahirId, tpsId,)
 
 
-data = []
-dataCheckExist = set(r[0] for r in c.execute('SELECT id FROM pemilih').fetchall())
 urlData = set(r[0] for r in c.execute( 'SELECT url FROM _source WHERE isFetched=0').fetchall())
 try:
     for urlVal in urlData:
@@ -74,25 +75,22 @@ try:
         tpsId = getTpsId(urlVal.replace('%20', ' '))
 
         for pemilih in tps:
-            if pemilih['id'] in dataCheckExist:
-                # print('Pemilih {nik} {nama} already exists'.format( nik=pemilih['nik'], nama=pemilih['nama']))
-                pass
-            else:
-                # print('Append {nik} {nama} to data pemilih'.format( nik=pemilih['nik'], nama=pemilih['nama']))
-                print(pemilih)
-                pemilih = preparePemilih(pemilih, tpsId)
+            try:
+                print('Insert {nik} {nama} to data pemilih'.format( nik=pemilih['nik'], nama=pemilih['nama']))
+                c.execute('''INSERT INTO
+                    pemilih (id, nama, nik, putaran, jenisKelaminId, tempatLahirId, tpsId)
+                    VALUES  ( ?,    ?,   ?,       ?,              ?,             ?,     ?)''', preparePemilih(pemilih, tpsId))
+            except sqlite3.IntegrityError as e:
+                if 'unique constraint' in e.args[0].lower():
+                    print('{nik} {nama} already exists'.format( nik=pemilih['nik'], nama=pemilih['nama']))
+                else:
+                    raise
 
-                data.append(pemilih)
-
-        print('removing {url} from list'.format(url=urlVal))
+        print('Done fetching {url} from list'.format(url=urlVal))
         c.execute('UPDATE _source set isFetched=1 where url=?', (urlVal,))
 except KeyboardInterrupt:
     pass
 finally:
-    print('saving pemilih to database')
-
-    c.executemany('''INSERT INTO
-        pemilih (id, nama, nik, putaran, jenisKelaminId, tempatLahirId, tpsId)
-        VALUES  ( ?,    ?,   ?,       ?,              ?,             ?,     ?)''', tuple(data))
+    print('commit pemilih to database')
     conn.commit()
     conn.close()
