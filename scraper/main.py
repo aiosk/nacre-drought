@@ -47,13 +47,12 @@ def getTempatLahirId(tempatLahirPemilih):
     return tempatLahirId
 
 
-# rowKelurahan = c.execute('SELECT id,nama FROM kelurahan').fetchall()
 rowTps = c.execute('''SELECT t.id,t.nama,t.kelurahanId,k.nama kelurahanNama
     FROM tps t
     join kelurahan k on k.id=t.kelurahanId''').fetchall()
 def getTpsId(url):
     location = url.split('/')
-    tpsId = tuple(r[0] for r in rowTps if int(location[-2]) == r[1] and location[-3].upper() == r[3])[0]    
+    tpsId = tuple(r[0] for r in rowTps if int(location[-2]) == r[1] and location[-3].upper() == r[3])[0]
 
     return tpsId
 
