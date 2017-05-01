@@ -1,5 +1,6 @@
 *.db*
 *.tar.gz
+scraper/main
 
 # Created by https://www.gitignore.io/api/python
 
