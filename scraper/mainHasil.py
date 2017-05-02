@@ -67,7 +67,12 @@ try:
 
         print(urlVal)
         urlSplit = urlVal.split('/')
-        putaran = int(urlSplit[-6])
+
+        try:
+            putaran = int(urlSplit[-6])
+        except ValueError:
+            putaran = 1
+
         kelurahanNama = urlSplit[-1].upper().replace('_',' ')
 
         tdSelectorSuara = CSSSelector('#rekapHasilPilkada td.text-center td.text-right')

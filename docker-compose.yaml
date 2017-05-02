@@ -4,6 +4,5 @@ services:
         build: ./scraper
         volumes:
           - ./scraper:/project
-        restart: unless-stopped
         working_dir: /project
         command: tail -f /dev/null
