@@ -13,7 +13,8 @@ c.execute('''CREATE TABLE IF NOT EXISTS _sourceHasil (
 
 
 def getUrl(location=''):
-    return 'https://pilkada2017.kpu.go.id/hasil/2/t1/dki_jakarta/{location}'.format( location=location).replace(' ', '%20')
+    # return 'https://pilkada2017.kpu.go.id/hasil/2/t1/dki_jakarta/{location}'.format( location=location).replace(' ', '%20')
+    return 'https://pilkada2017.kpu.go.id/hasil/t1/dki_jakarta/{location}'.format( location=location).replace(' ', '%20')
 
 rowKelurahan = c.execute('''SELECT kk.nama kabkota,
        kc.nama kecamatan,
